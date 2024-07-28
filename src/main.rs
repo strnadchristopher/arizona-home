@@ -11,12 +11,13 @@ use std::path::PathBuf;
 
 fn main() {
     dotenv().ok();
-    let access_key = "6ohUC8X87IddkM6HfMnkvwCvu791VG8HmXIj7foeI7jfLHfpRV7Tng==";
+    let porcupine_access_key = std::env::var("PORCUPINE_ACCESS_KEY")
+        .expect("PORCUPINE_ACCESS_KEY must be set in .env file");
     println!("Arizona Home Started");
 
-    let keyword_paths = [PathBuf::from("arizona.ppn")];
+    let keyword_paths = [PathBuf::from("arizona-windows.ppn")];
 
-    let porcupine: Porcupine = PorcupineBuilder::new_with_keyword_paths(access_key, &keyword_paths)
+    let porcupine: Porcupine = PorcupineBuilder::new_with_keyword_paths(porcupine_access_key, &keyword_paths)
         .init()
         .expect("Unable to Connect to Porcupine");
 
