@@ -1,0 +1,15 @@
+[package]
+name = "arizona-home"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+dotenv = "0.15.0"
+elevenlabs-api = "0.1.1"
+futures-util = "0.3.30"
+hound = "3.5.1"
+openai-api-rs = "5.0.4"
+pv_porcupine = "3.0.2"
+pv_recorder = "1.2.2"
+reqwest = { version = "0.12.5", features = ["multipart", "blocking"] }
+tokio = "1.39.2"
