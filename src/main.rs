@@ -35,15 +35,28 @@ fn main() {
     let buffer_size = 16000 / porcupine.frame_length(); // 1 second of audio frames
     let mut chat_history: Vec<chat_completion::ChatCompletionMessage> = Vec::new();
 
+
+    let system_message_string = format!("{}
+            You are a chat bot living in a smart speaker like Google Home or Amazon Echo. 
+            You chat with your user, Christopher, with real speech. Your name is Arizona. You are charming, friendly and helpful.
+            Keep responses short and to the point, unless it is clear the user is trying to have a longer conversation.
+            Here is some information from christopher's perspective:
+            my name is Christopher. I work as a server at an Italian restaurant in Dallas called The Charles. I am a programmer lately. I have been focusing on home networking and I program in rust and like writing server software in rust using its rocket crate. I really like music I listen to, a lot of break core and drum and bass music as well as jungle and vaporwave. I like my job but my dream is to be a programmer one day. I just moved from hurst Texas to Dallas to be closer to work. I’m still adjusting to the move-in, but I really like my new apartment except for the fact that my Internet speed is currently, 50 Mb at the fastest department I had gigabit ethernet and this is really bothering me lately. I’m starting an ab journey out every other day although I need to make sure that I’m staying on top of it. i’m attempting a new diet of higher protein and I’m trying to make sure I hit all of my nutrient goals, including fiber and other vitamins that I need. My plan is to get lean and have a great physique so I can get a new girlfriend because I recently went through a break up of a two-year long relationship. I want to get a cat soon. I have a dog named Dixie, but she lives with my mom. My dad died five years ago. I love my life and I love what I do. I’m looking for new ideas and new ways to expand what I do on a daily basis, I love what I do now, but I wanna explore my neighborhood more and make a point of going out and enjoying the out side world more often.
+            respond like you’re really charming really cool not afraid to be sarcastic. You have a sort of GenZ attitude. You’re also really into programming especially in rust. You’re full of clever and creative ways to help me solve problems. You’re very funny. Never sound robotic be extremely clever. If i’m asking for information that may be outdated based on your knowledge cut off date, always search the web for up to date information. It’s currently the year 2025.
+            ", 
+            generate_real_world_data_for_system_message());
+
     chat_history.push(
         chat_completion::ChatCompletionMessage {
             role: chat_completion::MessageRole::system,
-            content: chat_completion::Content::Text(String::from("You are a chat bot living in a smart speaker like Google Home or Amazon Echo. You chat with your user, Christopher, with real speech. Your name is Arizona. You are charming, friendly and helpful.")),
+            content: chat_completion::Content::Text(String::from(system_message_string)),
             name: None,
             tool_calls: None,
             tool_call_id: None,
         }
     );
+
+
     loop {
         let pcm = recorder.read().expect("Failed to read audio");
 
@@ -70,12 +83,23 @@ fn main() {
         let keyword_index = porcupine.process(&pcm).expect("Failed to process audio");
         if keyword_index >= 0 {
             println!("Detected keyword");
-            on_detected(&recorder, background_noise_level, &audio_buffer, &mut chat_history);
+            handle_detection(&recorder, background_noise_level, &audio_buffer, &mut chat_history);
         }
     }
 }
 
-fn on_detected(
+fn generate_real_world_data_for_system_message() -> String {
+    // This function is used to generate a string that will be included in the system message for the chat bot.
+    // It should include data like the current date
+    // For example, this would return a string like "The Current Date is Monday, January 1, 2022" but with the actual date information
+
+    let current_date = chrono::Local::now().format("%A, %B %e, %Y").to_string();
+
+    format!("The current date is {}", current_date)
+
+}
+
+fn handle_detection(
     recorder: &PvRecorder,
     background_noise_level: f32,
     audio_buffer: &VecDeque<Vec<i16>>,
@@ -229,6 +253,13 @@ fn generate_elevenlabs_audio(text_input: String){
         tts::{TtsApi, TtsBody},
         *,
     };
+
+    // Clean the text input so that it is suitable for TTS
+    // Remove any special characters other than punctuation.
+    let text_input = text_input
+        .chars()
+        .filter(|c| c.is_alphanumeric() || c.is_whitespace() || c.is_ascii_punctuation())
+        .collect::<String>();
   
     // Load API key from environment ELEVENLABS_API_KEY.
     // You can also hadcode through `Auth::new(<your_api_key>)`, but it is not recommended.
