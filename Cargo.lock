@@ -42,6 +42,7 @@ dependencies = [
  "futures-util",
  "hound",
  "openai-api-rs",
+ "openssl-sys",
  "pv_porcupine",
  "pv_recorder",
  "reqwest",

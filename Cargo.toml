@@ -10,6 +10,7 @@ elevenlabs-api = "0.1.1"
 futures-util = "0.3.30"
 hound = "3.5.1"
 openai-api-rs = "5.0.4"
+openssl-sys = "0.9.103"
 pv_porcupine = "3.0.2"
 pv_recorder = "1.2.2"
 reqwest = { version = "0.12.5", features = ["multipart", "blocking"] }
